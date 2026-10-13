@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #050811;
+    --bg-surface: #0a1022;
+    --border-cyan: rgba(0, 240, 255, 0.15);
+    --glow-cyan: 0 0 25px rgba(0, 240, 255, 0.25);
+    font-family: 'Plus Jakarta Sans', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    background-color: #050811;
+    color: #e2e8f0;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom cyber glassmorphism styles */
+.glass-panel {
+  background: rgba(10, 16, 34, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(0, 240, 255, 0.35);
+  box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.cyan-glow {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.cyan-text-glow {
+  text-shadow: 0 0 16px rgba(0, 240, 255, 0.5);
+}
+
+/* Bangladesh cyber grid background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050811;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00f0ff;
+}
