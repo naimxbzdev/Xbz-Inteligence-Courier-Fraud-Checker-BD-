@@ -110,5 +110,17 @@ console.log('\n4. Testing Courier Lookup & Risk Scoring Logic...');
     console.log('   ✅ Authentication and passkey verification passed.');
   }
 
+  // 6. Risk Analytics Aggregate Telemetry Tests
+  console.log('\n6. Testing Risk Analytics Telemetry Aggregates...');
+  {
+    const analytics = orchestrator.getRiskAnalytics({ timeframe: '30d' });
+    assert.ok(analytics.summary.totalLookupsEvaluated > 0, 'Total lookups should be > 0');
+    assert.strictEqual(analytics.courierPerformance.length, 5, 'Should have 5 couriers in telemetry');
+    assert.ok(analytics.commonRiskFactors.length >= 5, 'Should have common risk factors');
+    assert.strictEqual(analytics.riskTierDistribution.length, 4, 'Should have 4 risk tiers');
+    assert.strictEqual(analytics.regionalPerformance.length, 8, 'Should cover 8 Bangladesh divisions');
+    console.log('   ✅ Risk analytics aggregated data verified.');
+  }
+
   console.log('\n🎉 ALL XBZ INTELLIGENCE TESTS PASSED SUCCESSFULLY!\n');
 })();

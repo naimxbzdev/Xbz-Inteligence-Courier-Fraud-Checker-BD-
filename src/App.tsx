@@ -11,6 +11,7 @@ import { DocumentationPage } from './pages/DocumentationPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminPage } from './pages/AdminPage';
 import { AccountPage } from './pages/AccountPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsPage } from './pages/TermsPage';
 
@@ -86,6 +87,8 @@ function MainApp() {
         return <AdminPage />;
       case 'account':
         return <AccountPage onSearchPhone={handleReQueryFromAccount} />;
+      case 'analytics':
+        return <AnalyticsPage onSearchPhone={handleReQueryFromAccount} onNavigateTab={setCurrentTab} />;
       case 'privacy':
         return <PrivacyPolicyPage />;
       case 'terms':

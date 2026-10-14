@@ -121,3 +121,69 @@ export interface AdminSystemHealth {
     details: string;
   }>;
 }
+
+export interface CourierPerformanceStat {
+  courier: string;
+  courierId: CourierProviderId;
+  delivered: number;
+  cancelled: number;
+  returned: number;
+  successRate: number;
+  returnRate: number;
+  avgHoursDhaka: number;
+  avgHoursOutside: number;
+  totalParcels: number;
+}
+
+export interface RiskFactorStat {
+  factor: string;
+  factorBn: string;
+  percentage: number;
+  count: number;
+  severity: 'high' | 'moderate' | 'low';
+  recommendationEn: string;
+  recommendationBn: string;
+}
+
+export interface RiskTierStat {
+  tier: string;
+  tierBn: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+export interface HistoricalTrendStat {
+  period: string;
+  periodBn: string;
+  successRate: number;
+  returnRate: number;
+  riskIncidents: number;
+  totalLookups: number;
+}
+
+export interface RegionalPerformanceStat {
+  division: string;
+  divisionBn: string;
+  successRate: number;
+  returnRate: number;
+  avgDeliveryDays: number;
+}
+
+export interface RiskAnalyticsData {
+  timeframe: string;
+  lastUpdated: string;
+  summary: {
+    totalLookupsEvaluated: number;
+    avgDeliverySuccessRate: number;
+    avgReturnCancellationRate: number;
+    highRiskIncidentsFlagged: number;
+    activeMonitoredCouriers: number;
+    estimatedLossPreventedBDT: number;
+  };
+  courierPerformance: CourierPerformanceStat[];
+  commonRiskFactors: RiskFactorStat[];
+  riskTierDistribution: RiskTierStat[];
+  historicalTrends: HistoricalTrendStat[];
+  regionalPerformance: RegionalPerformanceStat[];
+}

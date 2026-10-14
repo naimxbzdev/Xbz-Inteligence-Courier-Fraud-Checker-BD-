@@ -40,6 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onOpe
   const navItems = [
     { id: 'home', label: t('nav.home') },
     { id: 'features', label: t('nav.features') },
+    { id: 'analytics', label: t('nav.analytics') },
     { id: 'couriers', label: t('nav.couriers') },
     { id: 'documentation', label: t('nav.documentation') },
     { id: 'contact', label: t('nav.contact') },

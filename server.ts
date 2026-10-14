@@ -139,6 +139,27 @@ app.post('/api/courier/track', async (req, res) => {
   }
 });
 
+/**
+ * Aggregated Risk Analytics & Courier Success Rates
+ */
+app.get('/api/courier/analytics', (req, res) => {
+  try {
+    const timeframe = typeof req.query.timeframe === 'string' ? req.query.timeframe : '30d';
+    const courier = typeof req.query.courier === 'string' ? req.query.courier : 'all';
+
+    const analyticsData = orchestrator.getRiskAnalytics({ timeframe, courier });
+    return res.json({
+      success: true,
+      data: analyticsData,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
+      success: false,
+      error: err.message || 'Failed to retrieve courier risk analytics',
+    });
+  }
+});
+
 // -------------------------------------------------------------
 // AUTHENTICATION & MERCHANT ACCOUNT ROUTES
 // -------------------------------------------------------------

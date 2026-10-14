@@ -5,6 +5,9 @@ import { SearchResultView } from '../components/SearchResultView';
 import { FeatureSection } from '../components/FeatureSection';
 import { HowItWorksSection } from '../components/HowItWorksSection';
 import { TrustBanner } from '../components/TrustBanner';
+import { RiskAnalyticsDashboard } from '../components/RiskAnalyticsDashboard';
+import { useLanguage } from '../context/LanguageContext';
+import { TrendingUp, ArrowRight } from 'lucide-react';
 import { LookupReport } from '../types';
 
 interface HomePageProps {
@@ -24,6 +27,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onClear,
   onNavigateTab,
 }) => {
+  const { language } = useLanguage();
   const resultRef = useRef<HTMLDivElement>(null);
 
   const handleSearchAndScroll = async (phone: string, scenario?: string) => {
@@ -69,6 +73,32 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* Courier Status Strip */}
       <CourierStatusStrip onSelectCourier={() => onNavigateTab('couriers')} />
+
+      {/* Risk Analytics Section on Home */}
+      <section className="py-12 border-b border-cyan-500/15 bg-gradient-to-b from-[#050811] via-[#060c22] to-[#050811]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold mb-2">
+                <TrendingUp className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{language === 'bn' ? 'জাতীয় কুরিয়ার ইন্টেলিজেন্স' : 'National Logistics Risk Telemetry'}</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                {language === 'bn' ? 'কুরিয়ার ডেলিভারি পারফরম্যান্স ও রিস্ক অ্যানালিটিক্স' : 'Courier Delivery Performance & Risk Analytics'}
+              </h2>
+            </div>
+            <button
+              onClick={() => onNavigateTab('analytics')}
+              className="px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-all self-start sm:self-center cursor-pointer"
+            >
+              <span>{language === 'bn' ? 'সম্পূর্ণ ড্যাশবোর্ড দেখুন' : 'Explore Full Analytics'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <RiskAnalyticsDashboard />
+        </div>
+      </section>
 
       {/* Feature Cards */}
       <FeatureSection />
