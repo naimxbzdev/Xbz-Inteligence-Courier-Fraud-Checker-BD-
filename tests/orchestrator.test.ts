@@ -122,5 +122,37 @@ console.log('\n4. Testing Courier Lookup & Risk Scoring Logic...');
     console.log('   ✅ Risk analytics aggregated data verified.');
   }
 
+  // 7. Parcel & Consignment Tracking Tests
+  console.log('\n7. Testing Parcel & Consignment Tracking with Courier Filtering...');
+  {
+    // Test Steadfast tracking
+    const sfParcel = await orchestrator.executeParcelTracking('CID-774920', 'steadfast', 'consignment');
+    assert.strictEqual(sfParcel.courier, 'steadfast');
+    assert.strictEqual(sfParcel.currentStatus, 'delivered');
+    assert.ok(sfParcel.timeline.length >= 4, 'Should have multiple chronological timeline events');
+    assert.ok(sfParcel.recipient.maskedPhone.includes('***'), 'Recipient phone must be masked for privacy');
+    assert.strictEqual(sfParcel.packageDetails.codAmount, 1850);
+    assert.ok(sfParcel.customerRiskTelemetry !== undefined, 'Should link recipient delivery risk profile');
+    assert.strictEqual(sfParcel.customerRiskTelemetry?.overallRisk, 'low');
+
+    // Test Pathao auto-detection by prefix
+    const pathaoParcel = await orchestrator.executeParcelTracking('PTH-892140', 'all', 'consignment');
+    assert.strictEqual(pathaoParcel.courier, 'pathao', 'Should auto-detect Pathao by PTH prefix');
+    assert.strictEqual(pathaoParcel.currentStatus, 'out_for_delivery');
+
+    // Test REDX return parcel
+    const redxParcel = await orchestrator.executeParcelTracking('RDX-551029', 'redx', 'parcel');
+    assert.strictEqual(redxParcel.courier, 'redx');
+    assert.strictEqual(redxParcel.currentStatus, 'returned');
+    assert.strictEqual(redxParcel.customerRiskTelemetry?.overallRisk, 'high');
+
+    // Test explicit courier filter
+    const paperflyParcel = await orchestrator.executeParcelTracking('CUSTOM-TRACK-991', 'paperfly', 'consignment');
+    assert.strictEqual(paperflyParcel.courier, 'paperfly', 'Should respect explicit courier selection');
+    assert.ok(paperflyParcel.timeline.length > 0);
+
+    console.log('   ✅ Parcel and consignment tracking with courier selection verified.');
+  }
+
   console.log('\n🎉 ALL XBZ INTELLIGENCE TESTS PASSED SUCCESSFULLY!\n');
 })();

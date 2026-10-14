@@ -15,21 +15,27 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsPage } from './pages/TermsPage';
 
-import { LookupReport } from './types';
+import { LookupReport, ParcelTrackingReport, SearchType } from './types';
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState('home');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   
-  // Search state
+  // Search state (Phone History & Parcel Tracking)
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
   const [searchReport, setSearchReport] = useState<LookupReport | null>(null);
+  const [parcelReport, setParcelReport] = useState<ParcelTrackingReport | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const { language } = useLanguage();
   const { token, refreshSavedSearches } = useAuth();
 
-  const handleSearch = async (phone: string, scenario?: string) => {
+  const handleSearch = async (
+    query: string,
+    searchType: SearchType = 'phone',
+    courier: string = 'all',
+    scenario?: string
+  ) => {
     setIsLoadingSearch(true);
     setSearchError(null);
 
@@ -41,13 +47,19 @@ function MainApp() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      const bodyPayload = {
+        query,
+        identifier: query,
+        phone: query,
+        searchType,
+        courier,
+        sandboxScenario: scenario,
+      };
+
       const res = await fetch('/api/courier/check', {
         method: 'POST',
         headers,
-        body: JSON.stringify({
-          phone,
-          sandboxScenario: scenario,
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       const contentType = res.headers.get('content-type') || '';
@@ -61,12 +73,18 @@ function MainApp() {
 
       const data = await res.json();
       if (data.success && data.data) {
-        setSearchReport(data.data);
+        if (data.searchType === 'consignment' || data.searchType === 'parcel' || data.data.timeline) {
+          setParcelReport(data.data as ParcelTrackingReport);
+          setSearchReport(null);
+        } else {
+          setSearchReport(data.data as LookupReport);
+          setParcelReport(null);
+        }
         if (token) {
           refreshSavedSearches();
         }
       } else {
-        setSearchError(data.error || (language === 'bn' ? 'কুরিয়ার হিস্ট্রি তথ্য যাচাই করা সম্ভব হয়নি।' : 'Failed to query courier intelligence'));
+        setSearchError(data.error || (language === 'bn' ? 'তথ্য যাচাই করা সম্ভব হয়নি।' : 'Failed to query courier intelligence'));
       }
     } catch (err: any) {
       setSearchError(err.message || (language === 'bn' ? 'নেটওয়ার্ক এরর বা সার্ভার সংযোগ ত্রুটি ঘটেছে।' : 'Network error occurred during lookup'));
@@ -77,12 +95,13 @@ function MainApp() {
 
   const handleClear = () => {
     setSearchReport(null);
+    setParcelReport(null);
     setSearchError(null);
   };
 
   const handleReQueryFromAccount = (phone: string) => {
     setCurrentTab('home');
-    handleSearch(phone);
+    handleSearch(phone, 'phone', 'all');
   };
 
   const renderCurrentPage = () => {
@@ -111,6 +130,7 @@ function MainApp() {
             onSearch={handleSearch}
             isLoading={isLoadingSearch}
             report={searchReport}
+            parcelReport={parcelReport}
             error={searchError}
             onClear={handleClear}
             onNavigateTab={setCurrentTab}

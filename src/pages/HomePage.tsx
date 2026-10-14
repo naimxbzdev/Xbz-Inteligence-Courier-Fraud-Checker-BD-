@@ -2,18 +2,25 @@ import React, { useRef } from 'react';
 import { HeroSection } from '../components/HeroSection';
 import { CourierStatusStrip } from '../components/CourierStatusStrip';
 import { SearchResultView } from '../components/SearchResultView';
+import { ParcelTrackingView } from '../components/ParcelTrackingView';
 import { FeatureSection } from '../components/FeatureSection';
 import { HowItWorksSection } from '../components/HowItWorksSection';
 import { TrustBanner } from '../components/TrustBanner';
 import { RiskAnalyticsDashboard } from '../components/RiskAnalyticsDashboard';
 import { useLanguage } from '../context/LanguageContext';
 import { TrendingUp, ArrowRight } from 'lucide-react';
-import { LookupReport } from '../types';
+import { LookupReport, ParcelTrackingReport, SearchType } from '../types';
 
 interface HomePageProps {
-  onSearch: (phone: string, scenario?: string) => Promise<void>;
+  onSearch: (
+    query: string,
+    searchType: SearchType,
+    courier: string,
+    scenario?: string
+  ) => Promise<void>;
   isLoading: boolean;
   report: LookupReport | null;
+  parcelReport: ParcelTrackingReport | null;
   error?: string | null;
   onClear: () => void;
   onNavigateTab: (tab: string) => void;
@@ -23,6 +30,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSearch,
   isLoading,
   report,
+  parcelReport,
   error,
   onClear,
   onNavigateTab,
@@ -30,8 +38,13 @@ export const HomePage: React.FC<HomePageProps> = ({
   const { language } = useLanguage();
   const resultRef = useRef<HTMLDivElement>(null);
 
-  const handleSearchAndScroll = async (phone: string, scenario?: string) => {
-    await onSearch(phone, scenario);
+  const handleSearchAndScroll = async (
+    query: string,
+    searchType: SearchType,
+    courier: string,
+    scenario?: string
+  ) => {
+    await onSearch(query, searchType, courier, scenario);
     setTimeout(() => {
       if (resultRef.current) {
         resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -46,7 +59,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         onSearch={handleSearchAndScroll}
         isLoading={isLoading}
         onClear={onClear}
-        hasResult={Boolean(report)}
+        hasResult={Boolean(report || parcelReport)}
       />
 
       {/* Search Error Banner (If any) */}
@@ -56,7 +69,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <span>{error}</span>
             <button
               onClick={onClear}
-              className="px-2.5 py-1 rounded bg-red-900/60 hover:bg-red-800 text-white font-bold text-xs"
+              className="px-2.5 py-1 rounded bg-red-900/60 hover:bg-red-800 text-white font-bold text-xs cursor-pointer"
             >
               Dismiss
             </button>
@@ -64,10 +77,17 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       )}
 
-      {/* Search Result (If available) */}
+      {/* Phone Search Result (If available) */}
       {report && (
         <div ref={resultRef} className="py-8 bg-[#060a17]/95 border-b border-cyan-500/20">
           <SearchResultView report={report} onReset={onClear} />
+        </div>
+      )}
+
+      {/* Parcel Tracking Result (If available) */}
+      {parcelReport && (
+        <div ref={resultRef} className="py-8 bg-[#060a17]/95 border-b border-cyan-500/20">
+          <ParcelTrackingView report={parcelReport} onReset={onClear} />
         </div>
       )}
 

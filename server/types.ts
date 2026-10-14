@@ -187,3 +187,90 @@ export interface RiskAnalyticsData {
   historicalTrends: HistoricalTrendStat[];
   regionalPerformance: RegionalPerformanceStat[];
 }
+
+export type SearchType = 'auto' | 'phone' | 'consignment' | 'parcel';
+export type CourierFilter = 'all' | 'steadfast' | 'pathao' | 'redx' | 'paperfly' | 'ecourier';
+
+export type ParcelStatus = 
+  | 'delivered'
+  | 'in_transit'
+  | 'out_for_delivery'
+  | 'picked_up'
+  | 'returned'
+  | 'cancelled'
+  | 'booked';
+
+export interface TrackingTimelineEvent {
+  timestamp: string;
+  titleEn: string;
+  titleBn: string;
+  locationEn: string;
+  locationBn: string;
+  status: 'completed' | 'current' | 'pending';
+  noteEn?: string;
+  noteBn?: string;
+}
+
+export interface CourierProbeStatus {
+  provider: CourierProviderId;
+  name: string;
+  queriedEndpoint: string;
+  status: 'found' | 'not_found' | 'not_configured' | 'error' | 'unsupported';
+  messageEn: string;
+  messageBn: string;
+  httpStatus?: number;
+}
+
+export interface ParcelTrackingReport {
+  requestId: string;
+  found: boolean;
+  searchType: 'consignment' | 'parcel';
+  identifier: string;
+  trackingId: string;
+  consignmentId: string;
+  invoiceId?: string;
+  courier: CourierProviderId;
+  courierName: string;
+  currentStatus: ParcelStatus;
+  statusLabelEn: string;
+  statusLabelBn: string;
+  statusColor: 'emerald' | 'cyan' | 'amber' | 'red' | 'blue';
+  bookingDate: string;
+  estimatedDelivery?: string;
+  deliveredDate?: string;
+  sender: {
+    name: string;
+    merchant: string;
+    phone: string;
+    district: string;
+  };
+  recipient: {
+    name: string;
+    phone: string;
+    maskedPhone: string;
+    district: string;
+    area: string;
+    address: string;
+  };
+  packageDetails: {
+    weightKg: number;
+    codAmount: number;
+    deliveryCharge: number;
+    itemDescription: string;
+  };
+  timeline: TrackingTimelineEvent[];
+  customerRiskTelemetry?: {
+    overallRisk: RiskLevel;
+    deliverySuccessRate: number;
+    totalHistoricalParcels: number;
+    cancelledParcels: number;
+    incidentReports: number;
+    noteEn: string;
+    noteBn: string;
+  };
+  probedCouriers?: CourierProbeStatus[];
+  disclaimerEn: string;
+  disclaimerBn: string;
+  isSandboxMode: boolean;
+  timestamp: string;
+}
