@@ -90,6 +90,37 @@ npm run test
 
 ---
 
+## 🌐 Netlify & Cloud Deployment
+
+### Why Standard Static Netlify Needs Serverless Functions
+By default, Netlify serves static HTML/JS/CSS from `dist/`. Standalone Express servers (`server.ts`) do not run as long-running processes on Netlify. 
+
+To solve this, XBZ Intelligence includes:
+1. **`netlify/functions/api.ts`**: Converts Express API routes into Netlify Serverless Functions using `serverless-http`.
+2. **`netlify.toml`**: Configures build command, functions directory, and redirects `/api/*` to `/.netlify/functions/api/:splat`.
+3. **`public/_redirects`**: Generates fallback routes for SPA navigation and API proxying.
+
+### Netlify Deployment Steps:
+1. Push this repository to GitHub or GitLab.
+2. In Netlify Dashboard, click **Add new site** > **Import an existing project**.
+3. Set Build Settings:
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+   - **Functions directory**: `netlify/functions`
+4. Add Environment Variables under **Site configuration > Environment variables**:
+   - `STEADFAST_API_KEY`: Your live Steadfast API Key
+   - `STEADFAST_SECRET_KEY`: Your live Steadfast Secret Key
+   - `ADMIN_PASSKEY`: Your admin password (default: `admin123`)
+   - `NODE_VERSION`: `20` or `22`
+5. Click **Deploy Site**!
+
+### Alternative Full-Stack Hosts (Render, Railway, VPS):
+On platforms supporting full-stack Node.js (e.g. Render, Railway, DigitalOcean, VPS), simply deploy with:
+- **Build command**: `npm run build`
+- **Start command**: `npm start` (runs `tsx server.ts` which serves both `/api` and Vite frontend on a single port).
+
+---
+
 ## 🧪 Built-In Sandbox & Demonstration Scenarios
 
 To enable testing without requiring paid production courier keys, the interface provides quick scenario buttons under the search form:

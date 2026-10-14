@@ -62,6 +62,11 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
     setIsLoading(true);
     try {
       const res = await fetch(`/api/courier/analytics?timeframe=${timeframe}&courier=${selectedCourier}`);
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        console.warn('Analytics API response is non-JSON (Netlify Functions or backend server may be offline).');
+        return;
+      }
       const data = await res.json();
       if (data.success && data.data) {
         setAnalyticsData(data.data);
@@ -70,7 +75,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         }
       }
     } catch (err) {
-      console.error('Failed to load risk analytics:', err);
+      console.warn('Failed to load risk analytics:', err);
     } finally {
       setIsLoading(false);
     }

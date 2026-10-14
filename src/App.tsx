@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LanguageProvider } from './context/LanguageContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -26,6 +26,7 @@ function MainApp() {
   const [searchReport, setSearchReport] = useState<LookupReport | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
 
+  const { language } = useLanguage();
   const { token, refreshSavedSearches } = useAuth();
 
   const handleSearch = async (phone: string, scenario?: string) => {
@@ -49,6 +50,15 @@ function MainApp() {
         }),
       });
 
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(
+          language === 'bn'
+            ? 'সার্ভার এপিআই থেকে বৈধ JSON রেসপন্স পাওয়া যায়নি (Netlify Functions বা ব্যাকএন্ড সার্ভার চালু আছে কি না নিশ্চিত করুন)।'
+            : 'Non-JSON response received from server. Please verify Netlify Functions or backend server deployment.'
+        );
+      }
+
       const data = await res.json();
       if (data.success && data.data) {
         setSearchReport(data.data);
@@ -56,10 +66,10 @@ function MainApp() {
           refreshSavedSearches();
         }
       } else {
-        setSearchError(data.error || 'Failed to query courier intelligence');
+        setSearchError(data.error || (language === 'bn' ? 'কুরিয়ার হিস্ট্রি তথ্য যাচাই করা সম্ভব হয়নি।' : 'Failed to query courier intelligence'));
       }
     } catch (err: any) {
-      setSearchError(err.message || 'Network error occurred during lookup');
+      setSearchError(err.message || (language === 'bn' ? 'নেটওয়ার্ক এরর বা সার্ভার সংযোগ ত্রুটি ঘটেছে।' : 'Network error occurred during lookup'));
     } finally {
       setIsLoadingSearch(false);
     }

@@ -40,7 +40,8 @@ export const AdminPage: React.FC = () => {
       const res = await fetch('/api/admin/health', {
         headers: { 'x-admin-key': adminPasskey },
       });
-      if (res.ok) {
+      const ct = res.headers.get('content-type') || '';
+      if (res.ok && ct.includes('application/json')) {
         const data = await res.json();
         setSystemHealth(data.data);
       } else {
@@ -68,8 +69,8 @@ export const AdminPage: React.FC = () => {
     if (!success) {
       setAuthError(
         language === 'bn' 
-          ? 'ভুল অ্যাডমিন পাসকি। ডিফল্ট ডেভেলপমেন্ট কি: admin123' 
-          : 'Invalid admin passkey. Default development key: admin123'
+          ? 'ভুল অ্যাডমিন পাসকি অথবা সার্ভার কানেকশন এরর। ডিফল্ট ডেভেলপমেন্ট কি: admin123' 
+          : 'Invalid admin passkey or server connection error. Default development key: admin123'
       );
     }
     setIsLoadingAuth(false);
@@ -94,6 +95,14 @@ export const AdminPage: React.FC = () => {
           sandboxScenario: testScenario,
         }),
       });
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        throw new Error(
+          language === 'bn' 
+            ? 'সার্ভার থেকে অবৈধ রেসপন্স এসেছে। Netlify Functions সচল রয়েছে কি না চেক করুন।' 
+            : 'Non-JSON response from server. Check Netlify Functions status.'
+        );
+      }
       const data = await res.json();
       setDiagnosticResult(data.diagnostic);
     } catch (err: any) {

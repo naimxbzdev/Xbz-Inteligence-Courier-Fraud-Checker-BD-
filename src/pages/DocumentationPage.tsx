@@ -99,6 +99,62 @@ export const DocumentationPage: React.FC = () => {
           </div>
         </section>
 
+        {/* Section 4: Production & Netlify Deployment Guide */}
+        <section className="p-6 sm:p-8 rounded-2xl bg-[#090f23]/90 border border-cyan-500/20 shadow-xl space-y-5">
+          <div className="flex items-center gap-2.5 text-lg font-bold text-white">
+            <Terminal className="w-5 h-5 text-cyan-400" />
+            <h2>{language === 'bn' ? '৪. Netlify ও প্রডাকশন ডেপ্লয়মেন্ট গাইড' : '4. Netlify & Production Deployment Architecture'}</h2>
+          </div>
+          
+          <div className="p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-xs text-cyan-200 leading-relaxed">
+            <p className="font-semibold text-cyan-300 mb-1">
+              {language === 'bn' ? '💡 Netlify-তে এপিআই কাজ না করার কারণ ও সমাধান:' : '💡 Why Netlify Needs Serverless Functions:'}
+            </p>
+            <p>
+              {language === 'bn'
+                ? 'Netlify ডিফল্টভাবে কেবল স্ট্যাটিক ফাইল (HTML/JS/CSS) পরিবেশন করে। ফলে ব্যাকএন্ড Express সার্ভার রান হয় না এবং API কল করলে 404 অথবা index.html এরর আসে। XBZ Intelligence-এ Netlify Serverless Functions (netlify/functions/api.ts) ও netlify.toml বিল্ট-ইন কনফিগার করা রয়েছে, যা স্বয়ংক্রিয়ভাবে ব্যাকএন্ড এপিআই রুটগুলোকে সার্ভারলেস হিসেবে হ্যান্ডেল করে।'
+                : 'Netlify by default is a static file host. Standalone Node.js Express servers do not run automatically. XBZ Intelligence includes Netlify Serverless Functions (netlify/functions/api.ts) and netlify.toml redirects so all /api/* routes operate seamlessly.'}
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-white">
+              {language === 'bn' ? 'প্রয়োজনীয় Environment Variables (Netlify Site Settings):' : 'Required Environment Variables (Netlify Dashboard):'}
+            </h3>
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 space-y-2">
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                <span className="text-cyan-400">STEADFAST_API_KEY</span>
+                <span className="text-slate-500">স্টেডফাস্ট মার্চেন্ট এপিআই কি</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                <span className="text-cyan-400">STEADFAST_SECRET_KEY</span>
+                <span className="text-slate-500">স্টেডফাস্ট মার্চেন্ট সিক্রেট কি</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                <span className="text-cyan-400">ADMIN_PASSKEY</span>
+                <span className="text-slate-500">অ্যাডমিন পাসকি (ডিফল্ট: admin123)</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-cyan-400">NODE_VERSION</span>
+                <span className="text-slate-500">20 বা 22 (Netlify Build Environment)</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <span className="text-cyan-300 font-bold block">Netlify Build Settings:</span>
+              <p className="text-slate-400">Build command: <code className="text-cyan-400">npm run build</code></p>
+              <p className="text-slate-400">Publish directory: <code className="text-cyan-400">dist</code></p>
+              <p className="text-slate-400">Functions directory: <code className="text-cyan-400">netlify/functions</code></p>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <span className="text-emerald-300 font-bold block">বিকল্প প্ল্যাটফর্ম (Full Node.js Server):</span>
+              <p className="text-slate-400">Render, Railway, VPS বা DigitalOcean-এ সরাসরি <code className="text-emerald-400">npm start</code> বা <code className="text-emerald-400">tsx server.ts</code> দিয়ে একক পোর্টে পূর্ণাঙ্গ সার্ভার চালানো যায়।</p>
+            </div>
+          </div>
+        </section>
+
       </div>
     </div>
   );

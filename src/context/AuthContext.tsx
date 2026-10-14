@@ -48,7 +48,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       fetch('/api/auth/me', {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          const ct = res.headers.get('content-type') || '';
+          if (!ct.includes('application/json')) throw new Error('Non-JSON response');
+          return res.json();
+        })
         .then((data) => {
           if (data.success && data.user) {
             setUser(data.user);
@@ -60,9 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         })
         .catch(() => {
-          localStorage.removeItem('xbz_auth_token');
-          setToken(null);
-          setUser(null);
+          // Keep offline state gracefully
         });
     }
   }, [token]);
@@ -73,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch('/api/merchant/searches', {
         headers: { Authorization: `Bearer ${token}` },
       });
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) return;
       const data = await res.json();
       if (data.success && data.savedSearches) {
         setSavedSearches(data.savedSearches);
@@ -89,6 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) return false;
       const data = await res.json();
       if (data.success && data.user) {
         setUser(data.user);
@@ -110,6 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name, businessName }),
       });
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) return false;
       const data = await res.json();
       if (data.success && data.user) {
         setUser(data.user);
@@ -136,10 +144,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await fetch('/api/admin/health', {
         headers: { 'x-admin-key': passkey },
       });
+      const ct = res.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) return false;
       if (res.ok) {
-        setAdminPasskey(passkey);
-        localStorage.setItem('xbz_admin_key', passkey);
-        return true;
+        const data = await res.json();
+        if (data.success) {
+          setAdminPasskey(passkey);
+          localStorage.setItem('xbz_admin_key', passkey);
+          return true;
+        }
       }
       return false;
     } catch {
