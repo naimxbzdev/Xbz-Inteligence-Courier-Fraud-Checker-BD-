@@ -69,8 +69,8 @@ export const AdminPage: React.FC = () => {
     if (!success) {
       setAuthError(
         language === 'bn' 
-          ? 'ভুল অ্যাডমিন পাসকি অথবা সার্ভার কানেকশন এরর। ডিফল্ট ডেভেলপমেন্ট কি: admin123' 
-          : 'Invalid admin passkey or server connection error. Default development key: admin123'
+          ? 'ভুল অ্যাডমিন পাসকি অথবা সার্ভার কানেকশন এরর।'
+          : 'Invalid admin passkey or server connection error.'
       );
     }
     setIsLoadingAuth(false);
@@ -150,12 +150,14 @@ export const AdminPage: React.FC = () => {
                   required
                   value={passkeyInput}
                   onChange={(e) => setPasskeyInput(e.target.value)}
-                  placeholder="admin123"
+                  placeholder={language === 'bn' ? 'আপনার অ্যাডমিন পাসকি লিখুন' : 'Enter your admin passkey'}
                   className="w-full bg-transparent py-2.5 text-white text-xs font-mono focus:outline-none"
                 />
               </div>
               <div className="text-[11px] text-cyan-400/80 mt-1.5">
-                Development Default: <code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300">admin123</code>
+                {language === 'bn'
+                  ? 'সাইট অ্যাডমিনিস্ট্রেটরের কাছ থেকে আপনার পাসকি সংগ্রহ করুন।'
+                  : 'Obtain your passkey from the site administrator.'}
               </div>
             </div>
 
