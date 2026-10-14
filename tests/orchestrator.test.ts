@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { randomUUID } from 'node:crypto';
 import { CourierOrchestrator } from '../server/orchestrator.js';
 import { authenticateAdmin, registerUser, authenticateUser } from '../server/auth.js';
 
@@ -98,9 +99,28 @@ console.log('\n4. Testing Courier Lookup & Risk Scoring Logic...');
   // 5. Authentication & Security
   console.log('\n5. Testing Authentication & Admin Authorization...');
   {
-    const expectedPasskey = process.env.ADMIN_PASSKEY || 'admin123';
-    assert.strictEqual(authenticateAdmin(expectedPasskey), true, 'Valid passkey authenticates admin');
-    assert.strictEqual(authenticateAdmin('wrong_passkey_999'), false, 'Invalid passkey rejected');
+    const originalPasskey = process.env.ADMIN_PASSKEY;
+    const testPasskey = randomUUID();
+    try {
+      process.env.ADMIN_PASSKEY = testPasskey;
+      assert.strictEqual(authenticateAdmin(testPasskey), true, 'Configured passkey authenticates admin');
+      assert.strictEqual(authenticateAdmin(randomUUID()), false, 'Invalid passkey rejected');
+      assert.strictEqual(authenticateAdmin(''), false, 'Empty input rejected');
+
+      delete process.env.ADMIN_PASSKEY;
+      assert.strictEqual(authenticateAdmin(testPasskey), false, 'Missing configuration rejects previous passkey');
+      assert.strictEqual(authenticateAdmin(''), false, 'Missing configuration rejects empty input');
+
+      process.env.ADMIN_PASSKEY = '';
+      assert.strictEqual(authenticateAdmin(testPasskey), false, 'Empty configuration rejects passkeys');
+      assert.strictEqual(authenticateAdmin(''), false, 'Empty configuration rejects empty input');
+    } finally {
+      if (originalPasskey === undefined) {
+        delete process.env.ADMIN_PASSKEY;
+      } else {
+        process.env.ADMIN_PASSKEY = originalPasskey;
+      }
+    }
 
     const testUser = registerUser('test@shop.bd', 'securepass', 'Test User', 'BD Express');
     assert.strictEqual(testUser.email, 'test@shop.bd');

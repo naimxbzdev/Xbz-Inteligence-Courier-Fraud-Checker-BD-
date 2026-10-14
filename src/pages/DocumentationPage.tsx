@@ -132,7 +132,7 @@ export const DocumentationPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
                 <span className="text-cyan-400">ADMIN_PASSKEY</span>
-                <span className="text-slate-500">অ্যাডমিন পাসকি (ডিফল্ট: admin123)</span>
+                <span className="text-slate-500">অ্যাডমিন পাসকি (শুধু সার্ভারের এনভায়রনমেন্টে সেট করুন)</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-cyan-400">NODE_VERSION</span>

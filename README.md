@@ -64,7 +64,7 @@ Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Add your courier credentials (or test immediately with the built-in Sandbox Scenarios):
+Add your courier credentials (or test immediately with the built-in Sandbox Scenarios). Set a unique admin passkey locally; admin access is disabled when `ADMIN_PASSKEY` is unset or empty:
 ```ini
 # Steadfast Courier (Live API)
 STEADFAST_API_BASE_URL="https://portal.steadfast.com.bd/api/v1"
@@ -72,8 +72,8 @@ STEADFAST_API_KEY="your_api_key_here"
 STEADFAST_SECRET_KEY="your_secret_key_here"
 
 # Admin & Session Security
-ADMIN_PASSKEY="admin123"
-SESSION_SECRET="your_secure_session_secret"
+ADMIN_PASSKEY=""
+SESSION_SECRET=""
 PORT=3000
 ```
 
@@ -110,9 +110,16 @@ To solve this, XBZ Intelligence includes:
 4. Add Environment Variables under **Site configuration > Environment variables**:
    - `STEADFAST_API_KEY`: Your live Steadfast API Key
    - `STEADFAST_SECRET_KEY`: Your live Steadfast Secret Key
-   - `ADMIN_PASSKEY`: Your admin password (default: `admin123`)
+   - `ADMIN_PASSKEY`: A unique, private admin passkey (required for admin access; no default)
    - `NODE_VERSION`: `20` or `22`
+   - `PAPERFLY_USERNAME`, `PAPERFLY_PASSWORD`, and `PAPERFLY_API_KEY`: Your Paperfly credentials when using live tracking
+   Keep credentials in the **Functions** scope, available to the deploy contexts that need them. If scope selection is unavailable, retain their existing server-side environment configuration. Never prefix credentials with `VITE_` or inject them into the frontend through Vite configuration.
 5. Click **Deploy Site**!
+
+### Secrets Scanning and Credential Safety
+Keep Netlify secrets scanning enabled. Store real credentials only in Netlify environment variables or an ignored local `.env` file, never in source code, documentation, or the public client bundle. The committed `.env.example` intentionally leaves credentials blank; `.gitignore` already excludes local environment files and generated build output.
+
+Rotate any credentials previously committed or exposed in a deployed bundle, update their values in Netlify, and deploy again. Removing a value from the latest source does not remove it from repository history or older deployments. If scanning still fails, use the full scanner report to identify the exact key and file without sharing the credential value; do not disable scanning or broadly omit credential keys to bypass the failure.
 
 ### Alternative Full-Stack Hosts (Render, Railway, VPS):
 On platforms supporting full-stack Node.js (e.g. Render, Railway, DigitalOcean, VPS), simply deploy with:
@@ -139,7 +146,7 @@ To enable testing without requiring paid production courier keys, the interface 
   - Email: `merchant@xbz.intelligence`
   - Password: `merchant123`
 - **Admin Portal**:
-  - Passkey: `admin123` (Access via the Lock icon in the header or `/admin`)
+  - Set `ADMIN_PASSKEY` in your server environment, then enter that private value at `/admin` or via the Lock icon in the header. No admin passkey is bundled with the application.
 
 ---
 

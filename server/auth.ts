@@ -18,8 +18,6 @@ export interface UserAccount {
   }>;
 }
 
-const adminPasskey = process.env.ADMIN_PASSKEY || 'admin123';
-
 // In-memory persistent user repository with pre-seeded demo merchant & admin accounts
 const users = new Map<string, UserAccount>();
 
@@ -91,7 +89,8 @@ export function authenticateUser(email: string, password: string): UserAccount {
 }
 
 export function authenticateAdmin(passkey: string): boolean {
-  return passkey === adminPasskey;
+  const adminPasskey = process.env.ADMIN_PASSKEY;
+  return Boolean(adminPasskey) && passkey === adminPasskey;
 }
 
 export function getUserById(id: string): UserAccount | undefined {
